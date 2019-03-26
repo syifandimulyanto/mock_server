@@ -1,7 +1,7 @@
 path,method,response,wait
 /hello,GET,"{
 ""hello"":""world""
-}",0
+}",750
 /hello,POST,"{
 ""hello"":""world post version""
 }",0
