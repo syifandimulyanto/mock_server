@@ -1,8 +1,12 @@
 from flask import Flask, jsonify, request
 from app.api_handling import api_handling
+import configparser
+
+cfg = configparser.ConfigParser()
+cfg.read('config.cfg')
 
 app = Flask(__name__)
-data = api_handling('mock_blueprint/test.csv')
+data = api_handling(cfg['file']['mock_test'])
 
 @app.route('/health')
 def health_checker():
