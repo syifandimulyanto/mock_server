@@ -12,6 +12,9 @@ path  , method, response                , wait
 /hello, GET   , "{""hello"":""world""}" , 0
 ```
 
+![CSV File](docs/images/csv.png)
+![Postman Request](docs/images/postman.png)
+
 * Pro tips 1: Gunakan google sheets lalu import ke csv untuk awalnya.
 * Pro tips 2: Jika menggunakan VS Code, cari extension yang berhubungan dengan CSV. (Saya menggunakan: `janisdd.vscode-edit-csv`)
 
