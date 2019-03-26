@@ -1,0 +1,13 @@
+path,method,response,wait
+/hello,GET,"{
+""hello"":""world""
+}",0
+/hello,POST,"{
+""hello"":""world post version""
+}",0
+/hello2,POST,"{
+""hello"":""world from different path""
+}",0
+/tegar,PUT,"{
+""hello"":""world from tegar""
+}",0
