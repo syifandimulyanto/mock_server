@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Contract Setup</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@json-editor/json-editor@latest/dist/jsoneditor.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ace-builds@latest/src-noconflict/ace.min.js"></script>
+  </head>
+  <body>
+    <h1>Contract Setup</h1>
+    
+    <button id='commit'>Commit (DB)</button>
+    <button id='save'>Save (Local)</button>
+    <button id='submit'>Show (console.log)</button>
+    <button id='load'>Load from DB</button>
+    <!-- <button id='enable_disable'>Disable/Enable Form</button> -->
+    <p>Status: <span id='valid_indicator'></span></p>
+    
+    <div id='editor_holder'></div>
+    
+    <script
+      src="https://code.jquery.com/jquery-3.4.1.min.js"
+      integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+      crossorigin="anonymous"></script>
+    <script>
+      $.ajaxSetup({
+        contentType: "application/json; charset=utf-8"
+      });
+
+      // This is the starting value for the editor
+      // We will use this to seed the initial editor 
+      // and to provide a "Restore to Default" button.
+      var starting_value = [
+        {
+          business_domain_name: "Add Transaction",
+          age: 35,
+          gender: "male",
+          location: {
+            city: "San Francisco",
+            state: "California",
+            citystate: ""
+          },
+          pets: [
+            {
+              name: "Spot",
+              type: "dog",
+              fixed: true
+            },
+            {
+              name: "Whiskers",
+              type: "cat",
+              fixed: false
+            }
+          ],
+          end_points: {
+            end_point_path: "/user/login",
+            model: ""
+          },
+          business_domain_description: "given\nwhen\nthen"
+        }
+      ];
+      
+      window.ace.config.set("basePath", "https://cdn.jsdelivr.net/npm/ace-builds@latest/src-noconflict/");
+      // Initialize the editor
+      var editor = new JSONEditor(document.getElementById('editor_holder'),{
+        // Enable fetching schemas via ajax
+        ajax: true,
+        enable_array_copy: true,
+        
+        // The schema for the editor
+        schema: {
+          type: "array",
+          title: "{{project_name}} - {{version}}",
+          description: "{{project_description}}",
+          format: "tabs",
+          items: {
+            title: "Business Domain",
+            headerTemplate: "{{business_domain_name}}",
+            $ref: "http://localhost:5000/setup/schema/{{project_name}}/{{version}}"
+            
+          }
+        },
+        
+        // Seed the form with a starting value
+        startval: starting_value,
+        
+        // Disable additional properties
+        no_additional_properties: true,
+        
+        // Require all properties by default
+        required_by_default: true
+      });
+      
+      // Hook up the submit button to log to the console
+      document.getElementById('submit').addEventListener('click',function() {
+        // Get the value from the editor
+        console.log(editor.getValue());
+      });
+
+      document.getElementById('commit').addEventListener('click',function() {
+        // Get the value from the editor
+        console.log(editor.getValue());
+        var saveData = $.post(
+          "http://localhost:5000/setup/schema/jirachi/latest",
+          JSON.stringify(editor.getValue()),
+          function(resultData) { alert("Commit Complete") },
+          "json"
+        );
+      });
+
+      document.getElementById('save').addEventListener('click',function() {
+        // Get the value from the editor
+        localStorage.setItem(editor.schema.title, JSON.stringify(editor.getValue()));
+        alert("Successfully save to local")
+      });
+      
+      // Hook up the Restore to Default button
+      document.getElementById('load').addEventListener('click',function() {
+        editor.setValue(starting_value);
+      });
+      
+      // Hook up the enable/disable button
+      // document.getElementById('enable_disable').addEventListener('click',function() {
+      //   // Enable form
+      //   if(!editor.isEnabled()) {
+      //     editor.enable();
+      //   }
+      //   // Disable form
+      //   else {
+      //     editor.disable();
+      //   }
+      // });
+      
+      // Hook up the validation indicator to update its 
+      // status whenever the editor changes
+      editor.on('change',function() {
+        // Get an array of errors from the validator
+        var errors = editor.validate();
+        
+        var indicator = document.getElementById('valid_indicator');
+        
+        // Not valid
+        if(errors.length) {
+          indicator.style.color = 'red';
+          indicator.textContent = "not valid";
+        }
+        // Valid
+        else {
+          indicator.style.color = 'green';
+          indicator.textContent = "valid";
+        }
+      });
+    </script>
+  </body>
+</html>
