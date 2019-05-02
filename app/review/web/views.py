@@ -16,12 +16,13 @@ class DisplaySwaggerUI(Resource):
             api_url = 'http://petstore.swagger.io/v2/swagger.json'
         else:
             app_name = "Not Tegar File"
-            api_url = 'file:///Users/tegarimansyah/alterra/mock_api_server/app/review/archive/json_example.json'
+            api_url = 'http://127.0.0.1:8887/json_example.json'
         
         default_config = {
             'dom_id': '#swagger-ui',
             'url': api_url,
-            'layout': 'StandaloneLayout'
+            'layout': 'StandaloneLayout',
+            'docExpansion': 'none'
         }
 
         all_config = {
